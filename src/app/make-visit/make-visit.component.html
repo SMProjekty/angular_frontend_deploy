@@ -1,0 +1,45 @@
+<div class="container text-center">
+    <h1>Ekran umawiania wizyty</h1>
+    <nav class="navbar navbar-expand-lg bg-light">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/main"><h4>Wizyty</h4></a>
+        <a class="navbar-brand" href="/makeVisit"><h4>Umów wizytę</h4></a>
+        <a class="navbar-brand" href="/calendar"><h4>Kalendarz</h4></a>
+        <a class="navbar-brand" href="#"><h4>Panel administratora</h4></a>
+        </div>
+    </nav>
+    <div class="row align-items-start">
+      <div class="col" style="background-color: #999;">
+          <form [formGroup]="myForm" (ngSubmit)="submitHandler()">
+            <div class="mb-3">
+              <label for="exampleInputEmail1" class="form-label">Wybierz pracownika</label>
+              <select class="form-select" id="pracownikSelect" formControlName="pracownik">
+                  <option *ngFor="let pracownik of workers" value="{{ pracownik.id }}">{{ pracownik.Imie }} {{ pracownik.Nazwisko }}</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="exampleInputEmail1" class="form-label">Wybierz usługę</label>
+              <select class="form-select" id="pracownikSelect" formControlName="usluga">
+                  <option *ngFor="let usluga of listaUslug" value="{{ usluga.id }}">{{ usluga.Nazwa }}</option>
+			        </select>
+            </div>
+            <div class="mb-3">
+              <label for="exampleInputEmail1" class="form-label">Wybierz datę</label>
+              <input type="text" class="form-control" id="exampleInputEmail1" placeholder="np. 15-02-2022" formControlName="data">
+            </div>
+            <div class="mb-3">
+              <label for="exampleInputEmail1" class="form-label">Dostępne godziny</label>
+              <select class="form-select" id="pracownikSelect" formControlName="godzina">
+                  <option *ngFor="let godzina of listFreeHours" value="{{ godzina }}">{{ godzina }}</option>
+              </select>
+              <button class="btn btn-info" (click)="checkAnavibleHour()">Sprawdź</button>
+            </div>
+            <div class="mb-3">
+              <label for="exampleInputEmail1" class="form-label">Numer telefonu klienta</label>
+              <input type="text" class="form-control" id="exampleInputEmail1" placeholder="np. 123456789" formControlName="telefon">
+            </div>
+            <button type="submit" class="btn btn-danger">Zaplanuj wizytę</button>
+          </form>
+      </div>
+    </div>
+   </div>

@@ -1,0 +1,11 @@
+.navbar {
+    margin-bottom: 30px;
+}
+
+.navbar-brand:hover {
+    text-decoration: underline;
+}
+
+.col {
+    height: 80vh;
+}

@@ -1,0 +1,72 @@
+<div class="container text-center">
+  <h1>Ekran główny salonu</h1>
+  <nav class="navbar navbar-expand-lg bg-light">
+    <div class="container-fluid">
+		<a class="navbar-brand" href="/main"><h4>Wizyty</h4></a>
+		<a class="navbar-brand" href="/makeVisit"><h4>Umów wizytę</h4></a>
+		<a class="navbar-brand" href="/calendar"><h4>Kalendarz</h4></a>
+		<a class="navbar-brand" href="#"><h4>Panel administratora</h4></a>
+    </div>
+  </nav>
+  <div class="row align-items-start">
+    <div class="col-2 workers-list">
+		<h3>Pracownicy:</h3>
+		<li class="list-group-item" *ngFor="let worker of workers" (click)="changeWorkerStatus(worker.id)">
+			<img class="photo" [ngStyle]="{'border-color': color}" style="border: solid 4px #ff476e;" src="/assets/hairdresser1.jpg"><p class="name" style="font-size: 20px; font-weight: bold;">{{ worker.Imie }}</p>
+		</li>
+	</div>
+    <div class="col" style="background-color: #999;">
+		<div class="date-nav">
+			<button class="btn-arrow" (click)="dateCount(false)"><</button>
+			<h3>{{ dateNav }}</h3>
+			<button class="btn-arrow" (click)="dateCount(true)">></button>
+		</div>
+		<table class="table">
+			<thead>
+				<tr>
+					<th scope="col">Godzina</th>
+					<th scope="col">Usługa</th>
+					<th scope="col">Klient</th>
+					<th scope="col">Pracownik</th>
+					<th scope="col">Podsumowanie</th>
+				</tr>
+			</thead>
+			<tbody *ngIf="workerStatus">
+				<tr *ngFor="let visit of visits" style="background-color: #ff476e;">
+					<td>{{ visit.DataIGodzina }}</td>
+					<td>{{ visit.idUslugi['nazwa'] }}</td>
+					<td>{{ visit.idKlienta['imie'] }} {{ visit.idKlienta['nazwisko'] }}</td>
+					<td>{{ visit.idPracownika['imie'] }}</td>
+					<td><button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#exampleModal" (click)="dataToModal(visit.id)"><b>INFO</b></button></td>
+				</tr>
+			</tbody>
+		</table>
+		  
+		<!-- Modal -->
+		<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+				<h1 class="modal-title fs-5" id="exampleModalLabel">Podsumowanie</h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<p><b>Imię i nazwisko klienta:</b> {{ modalData['imie'] }} {{ modalData['nazwisko'] }}</p>
+					<p><b>Numer telefonu:</b> {{ modalData['telefon'] }}</p>
+					<p><b>Usługa:</b> {{ modalData['usluga'] }}</p>
+					<p><b>Godzina rozpoczęcia:</b> {{ modalData['godzina_roz'] }}</p>
+					<p><b>Godzina zakończenia:</b> {{ modalData['godzina_zak'] }}</p>
+					<p><b>Koszt:</b> {{ modalData['koszt'] }}</p>
+					<p><b>Fryzjer:</b> {{ modalData['fryzjer'] }}</p>
+				</div>
+				<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Wyjdź</button>
+				<button type="button" class="btn btn-success">Wykonano</button>
+				</div>
+			</div>
+			</div>
+		</div>
+
+    </div>
+  </div>
+ </div>

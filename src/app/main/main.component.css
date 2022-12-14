@@ -1,0 +1,54 @@
+.photo {
+    margin-top: 40px;
+    width: 100px;
+    border-radius: 50px;
+}
+
+td {
+    font-size: 20px;
+    text-align: left;
+    padding: 10px;
+}
+
+th {
+    text-align: left;
+    font-size: 20px;
+    color: #EEE;
+}
+
+.col {
+    height: 80vh;
+}
+
+.workers-list {
+    background-color: #888;
+    height: 80vh;
+}
+
+.navbar {
+    margin-bottom: 30px;
+}
+
+.navbar-brand:hover {
+    text-decoration: underline;
+}
+
+.date-nav {
+    display: flex;
+}
+
+.date-nav > button {
+    background-color: #777;
+    border: none;
+    font-size: 2rem;
+}
+
+.date-nav > h3 {
+    width: 830px;
+}
+
+.modal-body {
+    text-align: left;
+}
+
+.btn-arrow { border-radius: 20px; }

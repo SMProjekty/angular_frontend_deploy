@@ -1,0 +1,42 @@
+<div class="container text-center">
+    <h1>Ekran - kalendarz</h1>
+    <nav class="navbar navbar-expand-lg bg-light">
+      <div class="container-fluid">
+          <a class="navbar-brand" href="/main"><h4>Wizyty</h4></a>
+          <a class="navbar-brand" href="/makeVisit"><h4>Umów wizytę</h4></a>
+          <a class="navbar-brand" href="/calendar"><h4>Kalendarz</h4></a>
+          <a class="navbar-brand" href="#"><h4>Panel administratora</h4></a>
+      </div>
+    </nav>
+    <div class="row align-items-start">
+      <div class="col-2 workers-list">
+          <h3>Pracownicy:</h3>
+          <li class="list-group-item" *ngFor="let worker of workers"><img class="photo" style="border: solid 4px #fff3cd;" src="/assets/hairdresser1.jpg"><p class="name" style="font-size: 20px; font-weight: bold;">{{ worker.Imie }}</p></li>
+      </div>
+      <div class="col-4" style="background-color: #999;">
+          kalendarz
+      </div>
+      <div class="col" style="background-color: #999;">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Godzina</th>
+              <th scope="col">Usługa</th>
+              <th scope="col">Klient</th>
+              <th scope="col">Pracownik</th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let visit of visits" style="background-color: #d1e7dd;">
+              <td>{{ visit.DataIGodzina }}</td>
+              <td>{{ visit.idUslugi['nazwa'] }}</td>
+              <td>{{ visit.idKlienta['imie'] }} {{ visit.idKlienta['nazwisko'] }}</td>
+              <td>{{ visit.idPracownika['imie'] }}</td>
+              <td><button type="button" class="btn btn-light"><b>INFO</b></button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+   </div>
