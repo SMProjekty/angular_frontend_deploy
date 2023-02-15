@@ -1,9 +1,7 @@
-import { Component, OnInit, } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { SharedService } from '../shared.service';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { formatDate } from '@angular/common';
 import { DatePipe } from '@angular/common';
-import { IWorker } from '../interfaces';
+import { IWorker, IVisit } from '../interfaces';
 
 @Component({
   selector: 'app-main',
@@ -12,90 +10,134 @@ import { IWorker } from '../interfaces';
   providers: [DatePipe]
 })
 export class MainComponent implements OnInit {
+
+  dateFromMakeVisit:any;
+
+  workers: IWorker[] = [];
+  visits?: IVisit[];
+  visitInfo?: string;
   nowDate = new Date();
   shortDate;
-  workers: any = [];
-  dateNav: string = ''
-  visits: any = [];
+  dateNav: string = '';
   modalData: any = {
-    'imie': null,
-    'nazwisko': null,
-    'telefon': null,
-    'usluga': null,
-    'godzina_roz': null,
-    'godzina_zak': null,
-    'koszt': null,
-    'fryzjer': null,
-  }
-  //testowo Basia
-  workerStatus: boolean = true;
-  color: string = '#ff476e';
+    'name': null,
+    'surname': null,
+    'phone': null,
+    'offer': null,
+    'time_start': null,
+    'time': null,
+    'price': null,
+    'worker': null,
+  };
 
-  //   {datetime: "08:00 - 10:00", name: "Stylizacja", client: "Marta Kowalska", worker: "Basia", bgcolor: "#d1e7dd"},
-  //   {datetime: "08:00 - 10:00", name: "Stylizacja i ścięcie", client: "Marta Kowalska", worker: "Kasia", bgcolor: "#f8d7da"},
-  //   {datetime: "08:00 - 10:00", name: "Stylizacja i kolor", client: "Marta Kowalska", worker: "Asia", bgcolor: "#fff3cd"}
-  // ];
-  listaUslug: any = null;
-  //listaPracownikow: any;
-  listaDostepnychGodzin: any = null;
-  
   constructor(private service: SharedService, private datePipe: DatePipe) {
-    this.shortDate = this.datePipe.transform(this.nowDate, 'dd-MM-yyyy');
+    this.shortDate = this.datePipe.transform(this.nowDate, 'yyyy-MM-dd');
     this.dateNav = this.shortDate as string;
   }
 
   ngOnInit(): void {
-    this.getListaPracownikow();
-    this.refreshVisits();
+    this.dateFromMakeVisit=this.service.getMessage() //pobrnie z komponentu dodawania wizyt
+
+    this.getListOfWorkers();
+    if(this.dateFromMakeVisit == undefined){
+      this.refreshVisits(this.dateNav);
+    }
+    if(this.dateFromMakeVisit != undefined){
+      this.refreshVisits(this.dateFromMakeVisit);
+      this.infoAlert('success-alert-addVisit')
+    }
   }
 
-  refreshVisits() {
-    var x = {today_date: this.shortDate + "08:00:00"};
-    this.service.getVisits(x).subscribe(res => {
-      this.visits = res;
+  refreshVisits(date: string) {
+    this.visits = undefined;
+    this.dateNav = date;
+    var x = {Date: date};
+    this.service.getVisits(x).subscribe((res: IVisit[]) => {
+        this.visits = res;
     });
   }
 
-  getListaPracownikow() {
-    this.service.listaPracownikow().subscribe(res => {
+  getListOfWorkers() {
+    this.service.listOfWorkers().subscribe((res: IWorker[]) => {
       this.workers = res;
-      console.log(this.workers);
+      this.workers.forEach(worker => worker.checked = true);
     });
   }
 
-
-  //przyciski
   dataToModal(id: Number) {
-    let index = this.visits.findIndex((obj: { id: Number; }) => obj.id === id);
-    this.modalData['imie'] = this.visits[index]['idKlienta']['imie'];
-    this.modalData['nazwisko'] = this.visits[index]['idKlienta']['nazwisko'];
-    this.modalData['telefon'] = this.visits[index]['idKlienta']['numerTelefonu'];
-    this.modalData['usluga'] = this.visits[index]['idUslugi']['nazwa'];
-    this.modalData['godzina_roz'] = '8:00';
-    this.modalData['godzina_zak'] = '8:30';
-    this.modalData['koszt'] = this.visits[index]['idUslugi']['koszt'];
-    this.modalData['fryzjer'] = this.visits[index]['idPracownika']['imie'];
+    if (this.visits != undefined) {
+      let index = this.visits.findIndex((obj: { id: Number; }) => obj.id === id);
+      this.modalData['id'] = id;
+      this.modalData['name'] = this.visits[index].customer.name;
+      this.modalData['surname'] = this.visits[index].customer.surname;
+      this.modalData['phone'] = this.visits[index].customer.phone;
+      this.modalData['offer'] = this.visits[index].offer.name;
+      this.modalData['time_start'] = this.visits[index].time;
+      this.modalData['time'] = this.visits[index].offer.time;
+      this.modalData['price'] = this.visits[index].offer.price;
+      this.modalData['worker'] = this.visits[index].worker.name;
+    }
   }
 
   dateCount(type: boolean) {
+    this.visits = undefined;
+
     if(type)
       this.nowDate.setDate(this.nowDate.getDate() + 1);
     else
       this.nowDate.setDate(this.nowDate.getDate() - 1);
-    this.shortDate = this.datePipe.transform(this.nowDate, 'dd-MM-yyyy');
+
+    this.shortDate = this.datePipe.transform(this.nowDate, 'yyyy-MM-dd');
     this.dateNav = this.shortDate as string;
-    this.refreshVisits();
+    this.refreshVisits(this.dateNav);
   }
 
   changeWorkerStatus(id :number) {
-    if(this.workerStatus) {
-      this.workerStatus = false;
-      this.color = '#ffd6df';
-      //zmianiać status wizyt pobranych, wyświetlane / nie wyświetlane
-    }
-    else {
-      this.workerStatus = true;
-      this.color = '#ff476e';
-    }
+    let workerId = this.workers.findIndex((obj: { id: Number; }) => obj.id === id);
+
+    if(this.workers[workerId].checked)
+      this.workers[workerId].checked = false;
+    else
+      this.workers[workerId].checked = true;
+  }
+
+  checkWorkerStatus(id: number): boolean {
+    let workerId = this.workers.findIndex((obj: { id: Number; }) => obj.id === id);
+    return this.workers[workerId].checked;
+  }
+
+  submitVisit() {
+    this.service.submitVisit({id: this.modalData['id']}).subscribe(res => {
+      if (res == 'Submitted visit.')
+        this.infoAlert('success-alert-submitVisit');
+      if (res == 'Critical error' || res == 'Variable empty')
+        this.infoAlert('error-alert-submitVisit');
+      this.refreshVisits(this.dateNav);
+    });
+  }
+
+  deleteVisit() {
+    this.service.delVisit(this.modalData['id']).subscribe(res => {
+      if (res == 'Deleted visit.')
+        this.infoAlert('success-alert-deleteVisit');
+      if (res == 'Critical error')
+        this.infoAlert('error-alert-deleteVisit');
+      this.refreshVisits(this.dateNav);
+    });
+  }
+
+  getDateFromModal(date: string) {
+    let dateFromModal = new Date(date);
+    this.nowDate = dateFromModal;
+    this.shortDate = this.datePipe.transform(this.nowDate, 'yyyy-MM-dd');
+    this.dateNav = this.shortDate as string;
+    this.refreshVisits(date);
+  }
+
+  infoAlert(id: string) {
+    document.getElementById(id)!.style.display = 'block';
+    setTimeout(() => {
+        document.getElementById(id)!.style.display = 'none';
+    }, 3000);
   }
 }

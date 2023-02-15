@@ -1,0 +1,39 @@
+.row {
+    text-align: center;
+}
+
+.spinner-border {
+    margin-top: 2rem;
+}
+
+.btn-margin {
+    width: 20%;
+    margin: 20px 0;
+}
+
+.date-nav > button {
+    color: #fff;
+    border: none;
+    font-size: 2rem;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.date-nav > p {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #fff;
+    margin: 0;
+}
+
+.date-nav {
+    display: flex;
+    justify-content: space-around;
+}
+
+.info-table {
+    margin-top: 15px;
+    font-size: 2rem;
+    text-align: center;
+    color: rgb(33,37,41);
+}

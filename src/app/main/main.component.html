@@ -1,72 +1,114 @@
-<div class="container text-center">
-  <h1>Ekran główny salonu</h1>
-  <nav class="navbar navbar-expand-lg bg-light">
-    <div class="container-fluid">
-		<a class="navbar-brand" href="/main"><h4>Wizyty</h4></a>
-		<a class="navbar-brand" href="/makeVisit"><h4>Umów wizytę</h4></a>
-		<a class="navbar-brand" href="/calendar"><h4>Kalendarz</h4></a>
-		<a class="navbar-brand" href="#"><h4>Panel administratora</h4></a>
-    </div>
-  </nav>
-  <div class="row align-items-start">
-    <div class="col-2 workers-list">
-		<h3>Pracownicy:</h3>
-		<li class="list-group-item" *ngFor="let worker of workers" (click)="changeWorkerStatus(worker.id)">
-			<img class="photo" [ngStyle]="{'border-color': color}" style="border: solid 4px #ff476e;" src="/assets/hairdresser1.jpg"><p class="name" style="font-size: 20px; font-weight: bold;">{{ worker.Imie }}</p>
-		</li>
-	</div>
-    <div class="col" style="background-color: #999;">
-		<div class="date-nav">
-			<button class="btn-arrow" (click)="dateCount(false)"><</button>
-			<h3>{{ dateNav }}</h3>
-			<button class="btn-arrow" (click)="dateCount(true)">></button>
+<div class="container">
+	<div class="row">
+		<div class="col">
+			<nav class="navbar bg-dark tmenu">
+				<a class="navbar-brand nav-main navbar-active" href="/main"><h4><i class="bi bi-house-fill"></i></h4></a>
+				<a class="navbar-brand nav-visit" href="/makeVisit"><h4><i class="bi bi-clipboard2-plus-fill"></i></h4></a>
+				<a class="navbar-brand nav-calendar" href="/calendar"><h4><i class="bi bi-calendar-range-fill"></i></h4></a>
+				<a class="navbar-brand nav-admin" href="/adminLogin"><h4><i class="bi bi-person-fill-gear"></i></h4></a>
+				<a class="navbar-brand navbar-active"><h4><app-clock></app-clock></h4></a>
+			</nav>
 		</div>
-		<table class="table">
-			<thead>
-				<tr>
-					<th scope="col">Godzina</th>
-					<th scope="col">Usługa</th>
-					<th scope="col">Klient</th>
-					<th scope="col">Pracownik</th>
-					<th scope="col">Podsumowanie</th>
-				</tr>
-			</thead>
-			<tbody *ngIf="workerStatus">
-				<tr *ngFor="let visit of visits" style="background-color: #ff476e;">
-					<td>{{ visit.DataIGodzina }}</td>
-					<td>{{ visit.idUslugi['nazwa'] }}</td>
-					<td>{{ visit.idKlienta['imie'] }} {{ visit.idKlienta['nazwisko'] }}</td>
-					<td>{{ visit.idPracownika['imie'] }}</td>
-					<td><button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#exampleModal" (click)="dataToModal(visit.id)"><b>INFO</b></button></td>
-				</tr>
-			</tbody>
-		</table>
-		  
+	</div>
+	<div class="row row-to-end">
+		<div class="col-2 bg-dark text-center">
+			<li class="list-group-item worker" *ngFor="let worker of workers" (click)="changeWorkerStatus(worker.id)" [ngClass]="{'brighter': !worker.checked}">
+				<img class="photo" [ngStyle]="{'border-color': worker.color}" style="border: solid 4px;" src="http://localhost:8000/photo/{{worker.photo}}"><p class="name" [ngStyle]="{'color': worker.color}">{{ worker.name }}</p>
+			</li>
+		</div>
+		<div class="col-10">
+			<div class="date-nav bg-dark">
+				<button class="btn-arrow bg-dark" (click)="dateCount(false)"><i class="bi bi-arrow-left-circle-fill"></i></button>
+				<p data-bs-toggle="modal" data-bs-target="#calendarModal">{{ dateNav |  date :'yyyy-MM-dd' }}</p>
+				<button class="btn-arrow bg-dark" (click)="dateCount(true)"><i class="bi bi-arrow-right-circle-fill"></i></button>
+			</div>
+			<ng-container *ngIf="visits == undefined">
+				<div class="spinner-border" role="status">
+					<span class="sr-only"></span>
+				</div>
+			</ng-container>
+			<ng-container *ngIf="visits != undefined && visits.length > 0">
+				<table class="table">
+					<thead>
+						<tr>
+							<th scope="col">Godzina</th>
+							<th scope="col">Usługa</th>
+							<th scope="col">Klient</th>
+							<th scope="col">Pracownik</th>
+							<th scope="col"></th>
+						</tr>
+					</thead>
+					<tbody>
+						<ng-container *ngFor="let visit of visits;">
+							<tr class="table-row" *ngIf="checkWorkerStatus(visit.worker.id)" [ngStyle]="{'background-color': visit.worker.color}">
+								<td><i class="bi bi-clock"></i> {{ visit.time }}</td>
+								<td>{{ visit.offer.name }}</td>
+								<td>{{ visit.customer.name }} {{ visit.customer.surname}}</td>
+								<td><i class="bi bi-scissors"></i> {{ visit.worker.name }}</td>
+								<td><button type="button" class="btn btn-light btn-summary" data-bs-toggle="modal" data-bs-target="#summaryModal" (click)="dataToModal(visit.id)"><b><i class="bi ico-details bi-question-square-fill"></i></b></button></td>
+							</tr>
+						</ng-container>
+					</tbody>
+				</table>
+			</ng-container>
+			<ng-container *ngIf="visits != undefined && visits.length < 1"><p class="info-table">Brak wizyt na wybrany dzień!</p></ng-container>
+		</div>
+	</div>
+
 		<!-- Modal -->
-		<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal fade" id="summaryModal" tabindex="-1" aria-labelledby="summaryModalLabel" aria-hidden="true">
 			<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
 				<div class="modal-header">
-				<h1 class="modal-title fs-5" id="exampleModalLabel">Podsumowanie</h1>
+				<h1 class="modal-title fs-5" id="summaryModalLabel">Szczegóły</h1>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
 				<div class="modal-body">
-					<p><b>Imię i nazwisko klienta:</b> {{ modalData['imie'] }} {{ modalData['nazwisko'] }}</p>
-					<p><b>Numer telefonu:</b> {{ modalData['telefon'] }}</p>
-					<p><b>Usługa:</b> {{ modalData['usluga'] }}</p>
-					<p><b>Godzina rozpoczęcia:</b> {{ modalData['godzina_roz'] }}</p>
-					<p><b>Godzina zakończenia:</b> {{ modalData['godzina_zak'] }}</p>
-					<p><b>Koszt:</b> {{ modalData['koszt'] }}</p>
-					<p><b>Fryzjer:</b> {{ modalData['fryzjer'] }}</p>
+					<p><b>Imię i nazwisko klienta:</b> {{ modalData['name'] }} {{ modalData['surname'] }}</p>
+					<p><b>Numer telefonu:</b> {{ modalData['phone'] }}</p>
+					<p><b>Usługa:</b> {{ modalData['offer'] }}</p>
+					<p><b>Godzina rozpoczęcia:</b> {{ modalData['time_start'] }}</p>
+					<p><b>Czas trwania:</b> {{ modalData['time'] }} min</p>
+					<p><b>Koszt:</b> {{ modalData['price'] }} zł</p>
+					<p><b>Fryzjer:</b> {{ modalData['worker'] }}</p>
 				</div>
 				<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Wyjdź</button>
-				<button type="button" class="btn btn-success">Wykonano</button>
+				<button type="button" class="btn btn-secondary modal-exit" data-bs-dismiss="modal"><i class="bi bi-box-arrow-left"></i></button>
+				<button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="deleteVisit()"><i class="bi bi-calendar-x"></i></button>
+				<button type="button" class="btn btn-success modal-submit" (click)="submitVisit()" data-bs-dismiss="modal"><i class="bi bi-calendar2-check"></i></button>
 				</div>
 			</div>
 			</div>
 		</div>
 
+		<!-- CalendarModal -->
+		<div class="modal fade" id="calendarModal" tabindex="-1" aria-labelledby="calendarModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<app-calendar-object (sendDateEvent)="getDateFromModal($event)"></app-calendar-object>
+				</div>
+			</div>
+		</div>
+
     </div>
-  </div>
- </div>
+
+ <!-- ALERTY -->
+<div class="alert alert-success" id="success-alert-addVisit" role="alert">
+    <i class="bi bi-check-circle-fill"></i> Pomyślnie umówiono wizytę.
+</div>
+
+<div class="alert alert-danger" id="error-alert-submitVisit" role="alert">
+	<i class="bi bi-exclamation-circle"></i> Błąd podczas potwierdzenia wykonania wizyty.
+</div>
+
+<div class="alert alert-success" id="success-alert-submitVisit" role="alert">
+    <i class="bi bi-check-circle-fill"></i> Zrealizowano wizytę.
+</div>
+
+<div class="alert alert-danger" id="error-alert-deleteVisit" role="alert">
+	<i class="bi bi-exclamation-circle"></i> Błąd podczas usuwania wizyty.
+</div>
+
+<div class="alert alert-success" id="success-alert-deleteVisit" role="alert">
+    <i class="bi bi-check-circle-fill"></i> Usunięto wizytę.
+</div>

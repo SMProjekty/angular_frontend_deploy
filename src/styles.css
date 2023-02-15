@@ -1,1 +1,220 @@
 /* You can add global styles to this file, and also import other style files */
+* {
+    font-family: "Lato";
+}
+
+.container {
+    margin: 0;
+    max-width: 100%;
+}
+
+.col {
+    padding: 0;
+}
+
+.tmenu h4 {
+    color: #fff;
+    font-weight: bold;
+}
+
+.navbar {
+    margin-bottom: 0px;
+    justify-content: space-around;
+}
+
+.navbar-brand {
+    display: flex;
+}
+
+.navbar-brand h4 {
+    color: #FFF;
+    opacity: 0.3;
+}
+
+
+.navbar-brand img {
+    max-height: 40px;
+    margin-left: 20px;
+}
+
+.navbar-active h4 {
+    opacity: 1;
+}
+
+.nav-main:after {
+    margin-left: 8px;
+    font-weight: bold;
+    content: "START";
+    color: #fff;
+    opacity: 0;
+    transition: all 1s;
+}
+
+.nav-main:hover:after{
+    opacity: 1;
+}
+
+.nav-visit:after {
+
+    margin-left: 8px;
+    font-weight: bold;
+    content: "UMÓW";
+    color: #fff;
+    opacity: 0;
+    transition: all 1s;
+}
+
+.nav-visit:hover:after{
+    opacity: 1;
+}
+
+.nav-admin:after {
+
+    margin-left: 8px;
+    font-weight: bold;
+    content: "ADMIN";
+    color: #fff;
+    opacity: 0;
+    transition: all 1s;
+}
+
+.nav-admin:hover:after{
+    opacity: 1;
+}
+
+.nav-calendar:after {
+    margin-left: 8px;
+    font-weight: bold;
+    content: "KALENDARZ";
+    color: #fff;
+    opacity: 0;
+    transition: all 1s;
+}
+
+.nav-calendar:hover:after{
+    opacity: 1;
+}
+
+.nav-offers:after {
+    margin-left: 8px;
+    font-weight: bold;
+    content: "USŁUGI";
+    color: #fff;
+    opacity: 0;
+    transition: all 1s;
+}
+
+.nav-offers:hover:after{
+    opacity: 1;
+}
+
+.nav-visits:after {
+
+    margin-left: 8px;
+    font-weight: bold;
+    content: "WIZYTY";
+    color: #fff;
+    opacity: 0;
+    transition: all 1s;
+}
+
+.nav-visits:hover:after{
+    opacity: 1;
+}
+
+.nav-vacations:after {
+    margin-left: 8px;
+    font-weight: bold;
+    content: "URLOPY";
+    color: #fff;
+    opacity: 0;
+    transition: all 1s;
+}
+
+.nav-vacations:hover:after{
+    opacity: 1;
+}
+
+.nav-workers:after {
+
+    margin-left: 8px;
+    font-weight: bold;
+    content: "PRACOWNICY";
+    opacity: 0;
+    transition: all 1s;
+    color: #fff;
+}
+
+.nav-workers:hover:after{
+    opacity: 1;
+}
+
+.nav-reports:after {
+    margin-left: 8px;
+    font-weight: bold;
+    content: "RAPORTY";
+    color: #fff;
+    opacity: 0;
+    transition: all 1s;
+}
+
+.nav-reports:hover:after{
+    opacity: 1;
+}
+
+.nav-logout:after {
+    margin-left: 8px;
+    font-weight: bold;
+    color: #fff;
+    content: "WYLOGUJ";
+    transition: all 1s;
+    opacity: 0;
+}
+
+.nav-logout:hover:after {
+
+    opacity: 1;
+}
+
+/* .modal-submit:hover:after {
+    margin-left: 8px;
+    font-weight: bold;
+    content: "ZATWIERDŹ";
+    color: #fff;
+}
+
+.modal-exit:hover:after {
+    margin-left: 8px;
+    font-weight: bold;
+    content: "WSTECZ";
+    color: #fff;
+} */
+
+
+.ico-details:after {
+    margin-left: 8px;
+    font-weight: bold;
+    content: " SZCZEGÓŁY";
+    color: rgb(33,37,41);
+    transition: all 1s;
+    opacity: 0;
+}
+
+.ico-details:hover:after {
+   opacity: 1;
+}
+
+.photo {
+    margin-top: 40px;
+    width: 100px;
+    border-radius: 50px;
+}
+
+.alert {
+    display: none;
+    width: fit-content;
+    position: absolute;
+    bottom: 10px;
+    right: 20px;
+}
+

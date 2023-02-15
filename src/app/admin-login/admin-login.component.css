@@ -1,0 +1,20 @@
+/* .navbar {
+    justify-content: space-around;
+}
+
+.navbar-brand:hover {
+    text-decoration: underline;
+    color: #FFF;
+} */
+
+.col-margin {
+    margin-top: 25px;
+}
+
+.mb-3 input {
+    width: 100%;
+}
+
+button {
+    width: 100%;
+}

@@ -1,0 +1,88 @@
+/* .navbar {
+    justify-content: space-around;
+}
+
+.navbar-brand h4 {
+    color: #FFF;
+    opacity: 0.3;
+}
+
+.navbar-brand:hover {
+    text-decoration: underline;
+    color: #FFF;
+}
+
+.navbar-active h4 {
+    opacity: 1;
+} */
+
+.table {
+    margin-top: 10px;
+}
+.table-row {
+    margin-top: 5px;
+    width: 80px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.row{
+    text-align: center;
+}
+
+td:nth-child(1), th:nth-child(1) { width: 40%-30px; padding-left: 20px; }
+td:nth-child(2), th:nth-child(2) { width: 20%; }
+td:nth-child(3), th:nth-child(3) { width: 20%; }
+td:nth-child(4), th:nth-child(4) { width: 20%; }
+
+.btn-width {
+    width: 20%;
+}
+
+.col-center {
+    text-align: center;
+}
+
+.info-table {
+    font-size: 2rem;
+    text-align: center;
+}
+
+.photo {
+    margin-top: 5px;
+    width: 80px;
+    height: 80px;
+    /* border-radius: 50px; */
+}
+
+/* div.btn-code{
+    width: 50px;
+    border: solid 4px;
+    padding: 5px;
+} */
+label.btn-code{
+    width: 50px;
+    border: solid 4px;
+    padding: 5px;
+}
+
+.color-div {
+    height: 60px;
+    width: 20px;
+    margin: 15px 5px 15px 5px;
+    border: solid black 1px;
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+.color-div:hover {
+    border: solid black 2px;
+}
+
+.color-darker {
+    opacity: 10%;
+}
+
+.btn-width {
+    width: 20%;
+}

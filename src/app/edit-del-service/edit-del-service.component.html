@@ -1,0 +1,147 @@
+<div class="container">
+	<div class="row">
+		<div class="col">
+			<nav class="navbar bg-dark tmenu">
+				<a class="navbar-brand navbar-active nav-offers" href="/editDelService"><h4><i class="bi bi-scissors"></i></h4></a>
+				<a class="navbar-brand nav-visits" href="/delVisit"><h4><i class="bi bi-calendar-check-fill"></i></h4></a>
+				<a class="navbar-brand nav-vacations" href="/vacations"><h4><i class="bi bi-airplane-fill"></i></h4></a>
+				<a class="navbar-brand nav-workers" href="/workers"><h4><i class="bi bi-people-fill"></i></h4></a>
+				<a class="navbar-brand nav-reports" href="/raports"><h4><i class="bi bi-database-fill-check"></i></h4></a>
+				<a class="navbar-brand nav-logout" href="/main"><h4><i class="bi bi-box-arrow-left"></i></h4></a>
+			</nav>
+		</div>
+	</div>
+	<ng-container *ngIf="offers != undefined && offers != null && offers.length > 0">
+    	<div class="row">
+			<div class="col">
+				<table class="table">
+					<thead>
+						<tr>
+							<th scope="col">Nazwa</th>
+							<th scope="col">Czas</th>
+							<th scope="col">Koszt</th>
+							<th scope="col">Akcja</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr *ngFor="let offer of offers">
+							<td>{{ offer.name }}</td>
+							<td>{{ offer.time }} min</td>
+							<td>{{ offer.price }} zł</td>
+							<td>
+								<div class="btn-group" role="group" aria-label="Basic example">
+									<button type="button" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#updateOfferModal" (click)="dataToModal(offer.id)"><i class="bi bi-pencil-square"></i></button>
+									<button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#delConfirmModal" (click)="offerIdToModal(offer.id)"><i class="bi bi-trash"></i></button>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</ng-container>
+	<ng-container class="spinner-container" *ngIf="offers.length < 1">
+		<div class="spinner-border" role="status">
+		  <span class="sr-only"></span>
+		</div>
+	</ng-container>
+	<ng-container *ngIf="offers == undefined || offers == null "><p  id="no_offers" class="info-table">Brak usług do wyświetlenia!</p></ng-container>
+	<div class="row">
+		<div class="col col-center">
+			<a class="btn btn-success btn-width" href="/addService"><i class="bi bi-plus-circle"></i> Dodaj usługę</a>
+		</div>
+	</div>
+</div>
+
+
+<!-- Modal edycji usługi -->
+<div class="modal fade" id="updateOfferModal" tabindex="-1" aria-labelledby="updateOferModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5" id="updateOfferModalLabel"><b>Edycja usługi</b></h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<form [formGroup]="updateOffer" (ngSubmit)="submitUpdateOffer()">
+					<div class="mb-3">
+						<label for="name" class="form-label"><b>Nazwa:</b></label>
+						<input type="text" class="form-control" id="name" formControlName="name" autocomplete="off">
+						<ng-component *ngIf="!updateOffer.controls['name'].valid && updateOffer.controls['name'].touched ? infoAlert('danger-alert-offer-name') : ''"></ng-component>
+					</div>
+					<div class="mb-3">
+						<label for="time" class="form-label"><b>Czas:</b></label>
+						<select class="form-select" id="serviceTimeField" formControlName="time">
+							<option #option_30 value="30" [selected]="option_30.value ==  modalData['time']">30 min</option>
+							<option #option_60 value="60" [selected]="option_60.value ==  modalData['time']">60 min</option>
+							<option #option_90 value="90" [selected]="option_90.value ==  modalData['time']">90 min</option>
+							<option #option_120 value="120" [selected]="option_120.value ==  modalData['time']">120 min</option>
+							<option #option_180 value="180" [selected]="option_180.value ==  modalData['time']">180 min</option>
+						</select>
+						<ng-component *ngIf="!updateOffer.controls['time'].valid && updateOffer.controls['time'].touched ? infoAlert('danger-alert-offer') : ''"></ng-component>
+					</div>
+					<div class="mb-3">
+						<label for="price" class="form-label"><b>Koszt:</b></label>
+						<input type="number" class="form-control" id="price" formControlName="price" min='1' max='5000' autocomplete="off">
+						<ng-component *ngIf="!updateOffer.controls['price'].valid && updateOffer.controls['price'].touched ? infoAlert('danger-alert-offer-price') : ''"></ng-component>
+					</div>
+
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-box-arrow-left"></i></button>
+						<button [disabled]="!updateOffer.valid" type="submit" class="btn btn-success" data-bs-dismiss="modal"><i class="bi bi-check-lg"></i></button>
+					</div>
+				</form>
+				<!-- ALERTY -->
+				<div class="alert alert-danger" id="danger-alert-offer" role="alert">
+					<i class="bi bi-exclamation-circle"></i> Pole "Czas trwania" nie może pozostać puste.
+				</div>
+
+				<div class="alert alert-danger" id="danger-alert-offer-name" role="alert">
+					<i class="bi bi-exclamation-circle"></i> Pole "Nazwa" musi zawierać conajmniej 2 znaki.
+				</div>
+
+				<div class="alert alert-danger" id="danger-alert-offer-price" role="alert">
+					<i class="bi bi-exclamation-circle"></i> Pole "Koszt" musi zawierać wartości dodatnie (większe od 0).
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Modal potwierdzenie usunięcia usługi -->
+<div class="modal fade" id="delConfirmModal" tabindex="-1" aria-labelledby="delConfirmModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5" id="delConfirmModalLabel">Czy na pewno chcesz usunąć?</h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-box-arrow-left"></i></button>
+				<button type="button" class="btn btn-success" (click)="deleteOffer()" data-bs-dismiss="modal"><i class="bi bi-check-lg"></i></button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- ALERTY -->
+<div class="alert alert-danger" id="danger-alert-null" role="alert">
+	<i class="bi bi-exclamation-circle"></i> Pola nie mogą pozostać puste.
+</div>
+
+<div class="alert alert-danger" id="danger-alert-critical" role="alert">
+	<i class="bi bi-exclamation-circle"></i> Coś poszło nie tak.. <br>Skontaktuj się z Administratorem.
+</div>
+
+<div class="alert alert-success" id="success-alert-delete" role="alert">
+    <i class="bi bi-check-circle-fill"></i> Usługa została pomyślnie usunięta.
+</div>
+
+<div class="alert alert-success" id="success-alert-update" role="alert">
+    <i class="bi bi-check-circle-fill"></i> Usługa została pomyślnie edytowana.
+</div>
+
+<div class="alert alert-success" id="success-alert-addOffer" role="alert">
+    <i class="bi bi-check-circle-fill"></i> Dodano nową usługę.
+</div>
+

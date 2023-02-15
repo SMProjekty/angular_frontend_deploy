@@ -1,0 +1,127 @@
+<div class="container">
+	<div class="row">
+		<div class="col">
+			<nav class="navbar bg-dark tmenu">
+				<a class="navbar-brand nav-offers" href="/editDelService"><h4><i class="bi bi-scissors"></i></h4></a>
+				<a class="navbar-brand nav-visits" href="/delVisit"><h4><i class="bi bi-calendar-check-fill"></i></h4></a>
+				<a class="navbar-brand nav-vacations" href="/vacations"><h4><i class="bi bi-airplane-fill"></i></h4></a>
+				<a class="navbar-brand nav-workers" href="/workers"><h4><i class="bi bi-people-fill"></i></h4></a>
+				<a class="navbar-brand nav-reports navbar-active" href="/raports"><h4><i class="bi bi-database-fill-check"></i></h4></a>
+				<a class="navbar-brand nav-logout" href="/main"><h4><i class="bi bi-box-arrow-left"></i></h4></a>
+			</nav>
+		</div>
+	</div>
+
+    <form [formGroup]="newRaport" (ngSubmit)="getDateToRaport()">
+        <div class="row">
+            <div class="col col-custom">
+                <label  class="form-label" for="startDate"><b>Data początkowa</b></label>
+                <input type="date" class="form-control" id="startDate"  formControlName="startDate" max="{{this.newRaport.get('endDate')?.value}}" min="1990-01-01">
+                <ng-component *ngIf="!newRaport.controls['startDate'].valid && newRaport.controls['startDate'].touched ? infoAlert('danger-alert-report') : ''"></ng-component>
+            </div>
+
+            <div class="col col-custom">
+                <label  class="form-label" for="endDate"><b>Data końcowa</b></label>
+                <input type="date" class="form-control" id="endDate"  formControlName="endDate" min="{{this.newRaport.get('startDate')?.value}}" max="2100-01-01" >
+                <ng-component *ngIf="!newRaport.controls['endDate'].valid && newRaport.controls['endDate'].touched ? infoAlert('danger-alert-report') : ''"></ng-component>
+            </div>
+
+            <div class="col col-custom">
+                <label  class="form-label" for="typeOfReport"><b>Typ raportu</b> </label>
+                <select class="form-select " formControlName="typeOfReport">
+                    <option selected disabled>Wybierz..</option>
+                    <option value="1" >Przychody</option>
+                    <option value="2">Przychody - osobowo</option>
+                  </select>
+                <ng-component *ngIf="!newRaport.controls['typeOfReport'].valid && newRaport.controls['typeOfReport'].touched ? infoAlert('danger-alert-report') : ''"></ng-component>
+            </div>
+
+            <div class="col col-btn">
+                <button [disabled]="!newRaport.valid" type="submit" class="btn btn-success" ><i class="bi bi-check-circle-fill"></i>  Wygeneruj</button>
+            </div>
+
+            <div class="col col-btn">
+                <button [disabled]="!this.dateToRaport" type="button" class="btn btn-success" (click)="exportExcel()"><i class="bi bi-filetype-xlsx"></i>  Eksportuj</button>
+            </div>
+
+            <span class="border-bottom"></span>
+        </div>
+    </form>
+
+    <ng-container *ngIf="this.newRaport.get('typeOfReport')?.value ==1 && dateToRaport !=undefined">
+    <div class="row" >
+        <table class="table" id="toExcel">
+            <thead>
+                <tr>
+                    <th scope="col">Data</th>
+                    <th scope="col">Ilość wizyt</th>
+                    <th scope="col">Godziny</th>
+                    <th scope="col">Przychód</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let date of dateToRaport['details_data']" style="background-color: #D4D9DB;">
+                    <td>{{ date.date | date:'dd-MM-YYY'}}</td>
+                    <td>{{ date.visitsCount }}</td>
+                    <td>{{ date.timeSum }} min</td>
+                    <td>{{ date.income }} zł</td>
+                </tr>
+                <tr *ngFor="let date of dateToRaport['sum_data']">
+                    <td>Łącznie: </td>
+                    <td>{{date.allVisitsCount}}</td>
+                    <td>{{date.allTimeSum}} min</td>
+                    <td>{{date.allIncome}} zł</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    </ng-container>
+
+    <ng-container *ngIf="this.newRaport.get('typeOfReport')?.value ==2 && dateToRaport !=undefined">
+    <div class="row">
+        <table class="table" id="toExcel">
+            <thead>
+                <tr>
+                    <th scope="col" >Data</th>
+                    <th scope="col" *ngFor="let dat of dateTh">Ilość wizyt <br>{{ dat['0'].Name[0] }}. {{ dat['0'].Surname }}</th>
+                    <th scope="col" *ngFor="let dat of dateTh">Godziny <br>{{ dat['0'].Name[0] }}. {{ dat['0'].Surname }}</th>
+                    <th scope="col" *ngFor="let dat of dateTh">Przychód <br>{{ dat['0'].Name[0] }}. {{ dat['0'].Surname }}</th>
+                </tr>
+            </thead>
+            <tbody >
+                <tbody>
+                    <tr *ngFor="let date of dateToRaport['details']" style="background-color: #D4D9DB;">
+                        <td >{{ date['0']['date'] | date:'dd-MM-YYY'}}</td>
+                        <td *ngFor="let dat of date">{{ dat['0']['visitsCount'] }}</td>
+                        <td *ngFor="let dat of date">{{ dat['0']['timeSum'] }} min</td>
+                        <td *ngFor="let dat of date">{{ dat['0']['income'] }} zł</td>
+                    </tr>
+                    <tr >
+                        <td>Łącznie: </td>
+                        <td *ngFor="let date of dateToRaport['workerStat']">{{ date['0'].allVisitsCount }}</td>
+                        <td *ngFor="let date of dateToRaport['workerStat']">{{ date['0'].allTimeSum }} min</td>
+                        <td *ngFor="let date of dateToRaport['workerStat']">{{ date['0'].allIncome}} zł</td>
+                    </tr>
+            </tbody>
+        </table>
+    </div>
+    </ng-container>
+    <ng-container *ngIf="dateToRaport !=undefined && dateToRaport < 1"><p class="info-table">Brak danych do wyświetlenia!</p></ng-container>
+</div>
+
+<!-- ALERTY -->
+<div class="alert alert-success" id="success-alert-report" role="alert">
+    <i class="bi bi-check-circle-fill"></i> Wygenerowano pomyślnie raport.
+</div>
+
+<div class="alert alert-danger" id="danger-alert-report-backend" role="alert">
+    <i class="bi bi-exclamation-circle"></i> Błąd generowania raportu! <br> Spróbuj jeszcze raz.
+</div>
+
+<div class="alert alert-danger" id="danger-alert-report" role="alert">
+    <i class="bi bi-exclamation-circle"></i> Pole nie może pozostać puste.
+</div>
+
+<div class="alert alert-danger" id="danger-alert-report-backend" role="alert">
+    <i class="bi bi-exclamation-circle"></i> Problem łączności z bazą.
+</div>

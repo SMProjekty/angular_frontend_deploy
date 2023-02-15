@@ -1,0 +1,27 @@
+
+<div class="month date-nav">
+  <button (click)="onPreviousMonth()"><i class="bi bi-arrow-left-circle-fill"></i></button>
+  <p> {{ calendarCreator.getMonthName(monthNumber) }} &nbsp; {{ year }} </p>
+  <button (click)="onNextMonth()"><i class="bi bi-arrow-right-circle-fill"></i></button>
+  <button data-bs-dismiss="modal"><i class="bi bi-x-lg"></i></button>
+</div>
+
+<br>
+
+<div class="calendar">
+  <table>
+    <tr>
+      <th *ngFor='let weekDay of weekDaysName' class="nameDay">
+        {{ weekDay }}
+      </th>
+    </tr>
+    <ng-container *ngFor="let day of monthDays; let i = index">
+      <tr *ngIf="((i % 7) == 0)">
+        <ng-container *ngFor="let day of monthDays; let j = index">
+          <td *ngIf="j >= i && j < i+7" class="day" id="day_{{day.number}}" (click)="getDayFromCalendar(day); colorSelected($event)">{{ day.number }}</td>
+          <!-- <td *ngIf="j >= i && j < i+7" class="day" [style.background-color]="bindColor(day)" (click)="getDayFromCalendar(day)">{{ day.number }}</td> -->
+        </ng-container>
+      </tr>
+    </ng-container>
+  </table>
+</div>

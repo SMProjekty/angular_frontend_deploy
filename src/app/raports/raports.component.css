@@ -1,0 +1,33 @@
+.row {
+    text-align: center;
+}
+
+.col {
+    text-align: center;
+}
+
+.table {
+    margin-top: 10px;
+}
+.table-row {
+    margin-top: 5px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.col-center {
+    text-align: center;
+}
+
+.col-custom{
+    margin-top: 10px;
+    margin-left: 15px;
+    margin-bottom: 10px;
+
+}
+.col-btn{
+    margin-top: 25px;
+    margin-left: 15px;
+
+}
+

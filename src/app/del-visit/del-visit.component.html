@@ -1,0 +1,81 @@
+<div class="container">
+	<div class="row">
+		<div class="col">
+			<nav class="navbar bg-dark tmenu">
+				<a class="navbar-brand nav-offers" href="/editDelService"><h4><i class="bi bi-scissors"></i></h4></a>
+				<a class="navbar-brand nav-visits navbar-active" href="/delVisit"><h4><i class="bi bi-calendar-check-fill"></i></h4></a>
+				<a class="navbar-brand nav-vacations" href="/vacations"><h4><i class="bi bi-airplane-fill"></i></h4></a>
+				<a class="navbar-brand nav-workers" href="/workers"><h4><i class="bi bi-people-fill"></i></h4></a>
+				<a class="navbar-brand nav-reports" href="/raports"><h4><i class="bi bi-database-fill-check"></i></h4></a>
+				<a class="navbar-brand modal-exit" href="/main"><h4><i class="bi bi-box-arrow-left"></i></h4></a>
+			</nav>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<div class="date-nav bg-dark">
+				<button class="btn-arrow" (click)="dateCount(false)"><i class="bi bi-arrow-left-circle-fill"></i></button>
+				<p data-bs-toggle="modal" data-bs-target="#calendarModal">{{ dateNav | date :'yyyy-MM-dd'}}</p>
+				<button class="btn-arrow" (click)="dateCount(true)"><i class="bi bi-arrow-right-circle-fill"></i></button>
+			</div>
+		</div>
+	</div>
+	<div class="col">
+		<ng-container *ngIf="visits == undefined">
+			<div class="spinner-border" role="status">
+				<span class="sr-only"></span>
+			</div>
+		</ng-container>
+		<ng-container *ngIf="visits != undefined && visits.length > 0">
+			<table class="table">
+				<thead>
+					<tr>
+						<th scope="col">Godzina</th>
+						<th scope="col">Usługa</th>
+						<th scope="col">Klient</th>
+						<th scope="col">Pracownik</th>
+						<th scope="col">Podsumowanie</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr *ngFor="let visit of visits">
+						<td>{{ visit.time }}</td>
+						<td>{{ visit.offer.name }}</td>
+						<td>{{ visit.customer.name }} {{ visit.customer.surname }}</td>
+						<td>{{ visit.worker.name }} {{ visit.worker.surname }}</td>
+						<td>
+							<button type="button" class="btn btn-dark btn-sm" (click)="restoreVisit(visit.id)"><i class="bi bi-arrow-clockwise"></i></button>
+							<button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#delConfirmModal" (click)="getIdToModal(visit.id)"><i class="bi bi-trash"></i></button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</ng-container>
+		<ng-container *ngIf="visits != undefined && visits.length < 1"><p class="info-table">Brak wizyt w wybranym dniu.</p></ng-container>
+	</div>
+
+	<!-- Modal -->
+	<div class="modal fade" id="delConfirmModal" tabindex="-1" aria-labelledby="delConfirmModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5" id="delConfirmModalLabel">Czy na pewno chcesz usunąć?</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Nie usuwaj</button>
+					<button type="button" class="btn btn-success" (click)="delVisit()" data-bs-dismiss="modal">Tak,	usuń</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- CalendarModal -->
+	<div class="modal fade" id="calendarModal" tabindex="-1" aria-labelledby="calendarModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<app-calendar-object (sendDateEvent)="getDateFromModal($event)"></app-calendar-object>
+			</div>
+		</div>
+	</div>
+</div>

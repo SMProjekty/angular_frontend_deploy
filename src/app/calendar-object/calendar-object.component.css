@@ -1,0 +1,39 @@
+.calendar table {
+    text-align: center;
+    width: 100%;
+    height: 300px;
+}
+.nameDay {
+    width: 14.28%;
+}
+
+.day {
+    width: 14.28%;
+    cursor: pointer;
+}
+
+.day:hover {
+    box-shadow:inset 0px 0px 0px 1px rgb(33,37,41);
+}
+
+.date-nav {
+    display: flex;
+    justify-content: space-around;
+}
+
+.date-nav > p {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+.date-nav > button {
+    background-color: #fff;
+    border: none;
+    font-size: 2rem;
+}
+
+.day-color {
+    background-color: rgb(33,37,41);
+    color: #fff;
+}

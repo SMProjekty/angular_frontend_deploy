@@ -1,42 +1,56 @@
-<div class="container text-center">
-    <h1>Ekran - kalendarz</h1>
-    <nav class="navbar navbar-expand-lg bg-light">
-      <div class="container-fluid">
-          <a class="navbar-brand" href="/main"><h4>Wizyty</h4></a>
-          <a class="navbar-brand" href="/makeVisit"><h4>Umów wizytę</h4></a>
-          <a class="navbar-brand" href="/calendar"><h4>Kalendarz</h4></a>
-          <a class="navbar-brand" href="#"><h4>Panel administratora</h4></a>
+<div class="container">
+
+	<div class="row">
+		<div class="col">
+			<nav class="navbar bg-dark tmenu">
+				<a class="navbar-brand nav-main" href="/main"><h4><i class="bi bi-house-fill"></i></h4></a>
+				<a class="navbar-brand nav-visit" href="/makeVisit"><h4><i class="bi bi-clipboard2-plus-fill"></i></h4></a>
+				<a class="navbar-brand nav-calendar navbar-active" href="/calendar"><h4><i class="bi bi-calendar-range-fill"></i></h4></a>
+				<a class="navbar-brand nav-admin" href="/adminLogin"><h4><i class="bi bi-person-fill-gear"></i></h4></a>
+				<a class="navbar-brand navbar-active"><h4><app-clock></app-clock></h4></a>
+			</nav>
+		</div>
+	</div>
+    <div class="row row-to-end">
+      <div class="col-2 workers-list bg-dark text-center">
+          <li class="list-group-item" *ngFor="let worker of workers" (click)="changeWorkerStatus(worker.id)">
+            <img class="photo" [ngStyle]="{'border-color': worker.color}" [ngClass]="{'brighter': !worker.checked}" style="border: solid 4px;" src="http://localhost:8000/photo/{{worker.photo}}"><p class="name" [ngStyle]="{'color': worker.color}">{{ worker.name }}</p>
+          </li>
       </div>
-    </nav>
-    <div class="row align-items-start">
-      <div class="col-2 workers-list">
-          <h3>Pracownicy:</h3>
-          <li class="list-group-item" *ngFor="let worker of workers"><img class="photo" style="border: solid 4px #fff3cd;" src="/assets/hairdresser1.jpg"><p class="name" style="font-size: 20px; font-weight: bold;">{{ worker.Imie }}</p></li>
+
+      <div class="col-4">
+        <app-calendar-object (sendDateEvent)="refreshVisits($event)"></app-calendar-object>
       </div>
-      <div class="col-4" style="background-color: #999;">
-          kalendarz
-      </div>
-      <div class="col" style="background-color: #999;">
-        <table class="table">
-          <thead>
-            <tr>
-              <th scope="col">Godzina</th>
-              <th scope="col">Usługa</th>
-              <th scope="col">Klient</th>
-              <th scope="col">Pracownik</th>
-              <th scope="col"></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let visit of visits" style="background-color: #d1e7dd;">
-              <td>{{ visit.DataIGodzina }}</td>
-              <td>{{ visit.idUslugi['nazwa'] }}</td>
-              <td>{{ visit.idKlienta['imie'] }} {{ visit.idKlienta['nazwisko'] }}</td>
-              <td>{{ visit.idPracownika['imie'] }}</td>
-              <td><button type="button" class="btn btn-light"><b>INFO</b></button></td>
-            </tr>
-          </tbody>
-        </table>
+
+      <div class="col">
+        <ng-container *ngIf="visits == undefined">
+          <div class="spinner-border" role="status">
+            <span class="sr-only"></span>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="visits != undefined && visits.length > 0">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Godzina</th>
+                <th scope="col">Usługa</th>
+                <th scope="col">Klient</th>
+                <th scope="col">Pracownik</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngFor="let visit of visits">
+                <tr *ngIf="checkWorkerStatus(visit.worker.id)" [ngStyle]="{'background-color': visit.worker.color}">
+                  <td>{{ visit.time }}</td>
+                  <td>{{ visit.offer.name }}</td>
+                  <td>{{ visit.customer.name }} {{ visit.customer.surname}}</td>
+                  <td>{{ visit.worker.name }}</td>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
+        </ng-container>
+        <ng-container *ngIf="visits != undefined && visits.length < 1"><p class="info-table">Brak wizyt na wybrany dzień!</p></ng-container>
       </div>
     </div>
-   </div>
+</div>

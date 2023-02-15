@@ -5,27 +5,29 @@ export interface IWorker {
     color: string;
     photo: string;
     active: boolean;
+    checked: boolean;
 }
 
-export interface IClinet {
+export interface ICustomer {
     id: number;
     name: string;
     surname: string;
     phone: string;
 }
 
-export interface IService {
+export interface IOffer {
     id: number;
     name: string;
     time: string;
+    price: number;
 }
 
 export interface IVisit {
     id: number;
-    id_client: number;
-    id_worker: number;
-    id_service: number;
-    date: string; //typ ?
-    time: string; //typ ?
+    customer: ICustomer;
+    worker: IWorker;
+    offer: IOffer;
+    date: Date; //typ ?
+    time: Date; //typ ?
     status: boolean;
 }

@@ -1,45 +1,192 @@
-<div class="container text-center">
-    <h1>Ekran umawiania wizyty</h1>
-    <nav class="navbar navbar-expand-lg bg-light">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="/main"><h4>Wizyty</h4></a>
-        <a class="navbar-brand" href="/makeVisit"><h4>Umów wizytę</h4></a>
-        <a class="navbar-brand" href="/calendar"><h4>Kalendarz</h4></a>
-        <a class="navbar-brand" href="#"><h4>Panel administratora</h4></a>
+<div class="container">
+  <div class="row">
+			<nav class="navbar bg-dark tmenu">
+				<a class="navbar-brand nav-main" href="/main"><h4><i class="bi bi-house-fill"></i></h4></a>
+				<a class="navbar-brand nav-visit navbar-active" href="/makeVisit"><h4><i class="bi bi-clipboard2-plus-fill"></i></h4></a>
+				<a class="navbar-brand nav-calendar" href="/calendar"><h4><i class="bi bi-calendar-range-fill"></i></h4></a>
+				<a class="navbar-brand nav-admin" href="/adminLogin"><h4><i class="bi bi-person-fill-gear"></i></h4></a>
+				<a class="navbar-brand navbar-active"><h4><app-clock></app-clock></h4></a>
+			</nav>
+	</div>
+
+  <div class="card">
+    <form [formGroup]="addNewVisit" >
+      <div class="row">
+        <ng-container *ngIf="offers != undefined && offers != null && offers.length > 0">
+          <div class="mb-3">
+            <label  class="white-title">Wybierz usługę:</label>
+            <select class="form-select" id="offerSelector" formControlName="offer" (click)="changeOffer()">
+                <option *ngFor="let offer of offers" value="{{ offer.id }}">{{ offer.name }} {{"Cena: "+ offer.price + " zł" }}{{" Czas: "+ offer.time+ " minut" }}</option>
+            </select>
+            <ng-component *ngIf="!addNewVisit.controls['offer'].valid && addNewVisit.controls['offer'].touched ? infoAlert('danger-alert-visit') : ''"></ng-component>
+          </div>
+        </ng-container>
+        <ng-container class="spinner-container" *ngIf="offers.length < 1">
+          <div class="spinner-border" role="status">
+            <span class="sr-only"></span>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="offers == undefined || offers == null"><p  id="no_offers" class="info-table">Brak usług do wyświetlenia!</p></ng-container>
+        <span class="border-bottom"></span>
+      </div>
+
+      <div class="row">
+        <ng-container *ngIf="workers != undefined && workers != null && workers.length > 0">
+          <div class="container text-center">
+            <div class="row align-items-start">
+              <div class="col" *ngFor="let worker of workers"  (click)="changeWorkerStatus(worker.id)" [ngClass]="{'brighter': !worker.checked}">
+                <img class="photo" [ngStyle]="{'border-color': worker.color}" style="border: solid 4px;" src="http://localhost:8000/photo/{{worker.photo}}"><p class="name" [ngStyle]="{'color': worker.color}">{{ worker.name }}</p>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+        <ng-container class="spinner-container" *ngIf="workers.length < 1">
+          <div class="spinner-border" role="status">
+            <span class="sr-only"></span>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="workers == undefined || workers == null "><p class="info-table">Brak pracowników do wyświetlenia!</p></ng-container>
+        <span class="border-bottom"></span>
+      </div>
+
+      <div class="row">
+        <div class="cal">
+          <ng-container *ngIf="addNewVisit.get('worker')?.valid && addNewVisit.get('offer')?.valid">
+            <app-calendar-mvisit (sendDateEvent)="checkAvailableHour($event)"></app-calendar-mvisit>
+            <span class="border-bottom" ></span>
+          </ng-container>
         </div>
-    </nav>
-    <div class="row align-items-start">
-      <div class="col" style="background-color: #999;">
-          <form [formGroup]="myForm" (ngSubmit)="submitHandler()">
-            <div class="mb-3">
-              <label for="exampleInputEmail1" class="form-label">Wybierz pracownika</label>
-              <select class="form-select" id="pracownikSelect" formControlName="pracownik">
-                  <option *ngFor="let pracownik of workers" value="{{ pracownik.id }}">{{ pracownik.Imie }} {{ pracownik.Nazwisko }}</option>
-              </select>
+      </div>
+
+      <ng-container *ngIf="listAvailableHours == 'Employee on leave'">
+        <div class="row">
+          <span class="top-bottom"></span>
+          <div class="mb-3 ">
+            <p class="info-table">Pracownik przebywa w tym dniu na urlopie!</p>
+          </div>
+          <span class="border-bottom" ></span>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="listAvailableHours != undefined && listAvailableHours != null && listAvailableHours != 'Employee on leave'">
+        <div class="row">
+
+          <div class="mb-3 ">
+            <label  class="white-title">Dostępne godziny</label><br>
+            <div class="container text-center">
+            <div class="btn-group" role="group" *ngFor="let hour of listAvailableHours">
+              <input type="radio" class="btn-check"  formControlName="hour"  value="{{hour}}" id="{{hour}}" autocomplete="off" checked>
+              <label class="btn btn-outline-success"  for="{{hour}}">{{hour}}</label>
             </div>
-            <div class="mb-3">
-              <label for="exampleInputEmail1" class="form-label">Wybierz usługę</label>
-              <select class="form-select" id="pracownikSelect" formControlName="usluga">
-                  <option *ngFor="let usluga of listaUslug" value="{{ usluga.id }}">{{ usluga.Nazwa }}</option>
-			        </select>
-            </div>
-            <div class="mb-3">
-              <label for="exampleInputEmail1" class="form-label">Wybierz datę</label>
-              <input type="text" class="form-control" id="exampleInputEmail1" placeholder="np. 15-02-2022" formControlName="data">
-            </div>
-            <div class="mb-3">
-              <label for="exampleInputEmail1" class="form-label">Dostępne godziny</label>
-              <select class="form-select" id="pracownikSelect" formControlName="godzina">
-                  <option *ngFor="let godzina of listFreeHours" value="{{ godzina }}">{{ godzina }}</option>
-              </select>
-              <button class="btn btn-info" (click)="checkAnavibleHour()">Sprawdź</button>
-            </div>
-            <div class="mb-3">
-              <label for="exampleInputEmail1" class="form-label">Numer telefonu klienta</label>
-              <input type="text" class="form-control" id="exampleInputEmail1" placeholder="np. 123456789" formControlName="telefon">
-            </div>
-            <button type="submit" class="btn btn-danger">Zaplanuj wizytę</button>
-          </form>
+          </div>
+          </div>
+          <span class="border-bottom" ></span>
+        </div>
+
+      </ng-container>
+      <ng-container *ngIf="listAvailableHours == 'undefined' || listAvailableHours == 'null' || listAvailableHours == 'No available time'"><p class="info-table">Brak dostępnych godzin!</p></ng-container>
+
+      <ng-container *ngIf="this.addNewVisit.get('hour')?.value != undefined && this.addNewVisit.get('hour')?.value != 'undefined'">
+        <label  class="white-title">Dane kontaktowe klienta:</label>
+          <div class="mb-3 input-group">
+            <input type="text" class="form-control" id="phone" placeholder="Numer Telefonu np. 666555444" formControlName="phone" autocomplete="off">
+            <button [disabled]="!addNewVisit.get('phone')?.valid" class="btn btn-success" (click)="checkPhoneNumber()"><b><i class="bi bi-search"></i></b></button>
+            <ng-component *ngIf="!addNewVisit.controls['phone'].valid && addNewVisit.controls['phone'].touched ? infoAlert('danger-alert-phone') : ''"></ng-component>
+          </div>
+
+        <ng-container *ngIf="customerInfo != 'No phone number' && customerInfo != undefined && addNewVisit.controls['phone'].valid">
+          <div class="mb-3 input-group">
+            <span class="input-group-text">Imię i Nazwisko</span>
+            <input type="text" class="form-control" formControlName="name" id="name" value={{customerInfo.name}} autocomplete="off" >
+            <ng-component *ngIf="!addNewVisit.controls['name'].valid && addNewVisit.controls['name'].touched ? infoAlert('danger-alert-customer') : ''"></ng-component>
+
+            <input type="text" class="form-control" id="surname" formControlName="surname" value={{customerInfo.surname}} autocomplete="off">
+            <ng-component *ngIf="!addNewVisit.controls['surname'].valid && addNewVisit.controls['surname'].touched ? infoAlert('danger-alert-customer') : ''"></ng-component>
+            <span class="border-bottom" ></span>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="customerInfo == 'No phone number' && addNewVisit.controls['phone'].valid">
+          <div class="mb-3 input-group">
+            <span class="input-group-text">Imię i Nazwisko</span>
+            <input type="text" class="form-control" formControlName="name" id="name"  autocomplete="off" >
+            <ng-component *ngIf="!addNewVisit.controls['name'].valid && addNewVisit.controls['name'].touched ? infoAlert('danger-alert-customer') : ''"></ng-component>
+
+            <input type="text" class="form-control" id="surname" formControlName="surname" autocomplete="off">
+            <ng-component *ngIf="!addNewVisit.controls['surname'].valid && addNewVisit.controls['surname'].touched ? infoAlert('danger-alert-customer') : ''"></ng-component>
+            <span class="border-bottom" ></span>
+          </div>
+        </ng-container>
+      </ng-container>
+      <div class="d-grid gap-2 col-6 mx-auto btn-sum">
+        <button [disabled]="!addNewVisit.valid" type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#exampleModal" (click)="dataToModal()"><b>PODSUMOWANIE</b></button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">PODSUMOWANIE</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+            <p><b>Imię i nazwisko klienta:</b>  {{ modalData['name'] }}  {{ modalData['surname'] }}</p>
+            <p><b>Numer telefonu:</b> {{ modalData['phone'] }}</p>
+            <p><b>Usługa:</b> {{ modalData['offer'] }}</p>
+            <p><b>Data:</b> {{ modalData['date'] }}</p>
+            <p><b>Godzina rozpoczęcia:</b> {{ modalData['time_start'] }}</p>
+            <p><b>Czas trwania:</b> {{ modalData['time'] }} min</p>
+            <p><b>Koszt:</b> {{ modalData['price'] }} zł</p>
+            <p><b>Fryzjer:</b> {{ modalData['worker'] }}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary modal-exit" data-bs-dismiss="modal"><i class="bi bi-box-arrow-left"></i></button>
+        <button [disabled]="!addNewVisit.valid" type="button" class="btn btn-success modal-submit" (click)="submitVisit()" data-bs-dismiss="modal"><i class="bi bi-calendar2-check"></i></button>
       </div>
     </div>
-   </div>
+  </div>
+</div>
+
+
+<!-- ALERTY -->
+<div class="alert alert-danger" id="danger-alert-visit" role="alert">
+  <i class="bi bi-exclamation-circle"></i> Pole nie może pozostać puste.
+</div>
+
+<div class="alert alert-danger" id="danger-alert-phone" role="alert">
+  <i class="bi bi-exclamation-circle"></i> Pole "Numer Telefonu" musi zawierać 9 cyfr.
+</div>
+
+<div class="alert alert-danger" id="danger-alert-customer-base" role="alert">
+  <i class="bi bi-exclamation-circle"></i> Brak klienta w bazie.
+</div>
+
+<div class="alert alert-danger" id="danger-alert-hours-base" role="alert">
+  <i class="bi bi-exclamation-circle"></i> Coś poszło nie tak.. <br> Spróbuj jeszcze raz.
+</div>
+
+<div class="alert alert-danger" id="danger-alert-vacation-base" role="alert">
+  <i class="bi bi-exclamation-circle"></i> Pracownik przebywa w tym dniu na urlopie.
+</div>
+
+<div class="alert alert-danger" id="danger-alert-customer" role="alert">
+  <i class="bi bi-exclamation-circle"></i> Pole nie może pozostać puste <br>(musi również zawierać conajmniej 2 znaki).
+</div>
+
+<div class="alert alert-danger" id="danger-alert-critical-backend" role="alert">
+  <i class="bi bi-exclamation-circle"></i> Coś poszło nie tak.. <br> Wizyta nie została dodana.
+</div>
+
+<div class="alert alert-danger" id="danger-alert-no-hours" role="alert">
+  <i class="bi bi-exclamation-circle"></i> Brak dostępnych godzin..
+</div>
+
+
+<div class="alert alert-danger" id="danger-alert-visit-backend" role="alert">
+  <i class="bi bi-exclamation-circle"></i> Problem łączności z bazą.
+</div>

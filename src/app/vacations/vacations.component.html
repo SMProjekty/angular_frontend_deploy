@@ -1,0 +1,141 @@
+<div class="container">
+	<div class="row">
+		<div class="col">
+			<nav class="navbar bg-dark tmenu">
+				<a class="navbar-brand nav-offers" href="/editDelService"><h4><i class="bi bi-scissors"></i></h4></a>
+				<a class="navbar-brand nav-visits" href="/delVisit"><h4><i class="bi bi-calendar-check-fill"></i></h4></a>
+				<a class="navbar-brand nav-vacations navbar-active" href="/vacations"><h4><i class="bi bi-airplane-fill"></i></h4></a>
+				<a class="navbar-brand nav-workers" href="/workers"><h4><i class="bi bi-people-fill"></i></h4></a>
+				<a class="navbar-brand nav-reports" href="/raports"><h4><i class="bi bi-database-fill-check"></i></h4></a>
+				<a class="navbar-brand nav-logout" href="/main"><h4><i class="bi bi-box-arrow-left"></i></h4></a>
+			</nav>
+		</div>
+	</div>
+  <div class="row">
+    	<div class="col">
+    		<div class="date-nav bg-dark">
+				<button class="btn-arrow bg-dark" (click)="dateCount(false)"><i class="bi bi-arrow-left-circle-fill"></i></button>
+				<p>{{ dateNav }}</p>
+				<button class="btn-arrow bg-dark" (click)="dateCount(true)"><i class="bi bi-arrow-right-circle-fill"></i></button>
+			</div>
+			<ng-container *ngIf="vacations == undefined">
+				<div class="spinner-border" role="status">
+					<span class="sr-only"></span>
+				</div>
+			</ng-container>
+			<ng-container *ngIf="vacations != undefined && vacations.length > 0">
+				<table class="table">
+					<thead>
+						<tr>
+							<th scope="col">Pracownik</th>
+							<th scope="col">Początek urlopu</th>
+							<th scope="col">Koniec urlopu</th>
+							<th scope="col"></th>
+						</tr>
+					</thead>
+					<tbody>
+						<ng-container *ngFor="let vacation of vacations;">
+							<tr class="table-row">
+								<td>{{ vacation.worker['name'] }} {{ vacation.worker['surname'] }}</td>
+								<td>{{ vacation.datefrom | date: 'dd-MM-yyyy' }}</td>
+								<td>{{ vacation.dateto | date: 'dd-MM-yyyy'  }}</td>
+								<td>
+                  					<button type="button" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="bi bi-pencil-square"></i></button>
+                  					<button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#delConfirmModal" (click)="vacationIdToModal(vacation.id)"><i class="bi bi-trash"></i></button>
+               	 				</td>
+							</tr>
+						</ng-container>
+					</tbody>
+				</table>
+			</ng-container>
+			<ng-container *ngIf="vacations != undefined && vacations.length < 1"><p class="info-table">Brak urlopów  na wybranym miesiącu!</p></ng-container>
+    	</div>
+  	</div>
+  	<div class="row">
+    	<div class="col">
+      		<button class="btn btn-success btn-margin" data-bs-toggle="modal" data-bs-target="#addVacationModal"><i class="bi bi-plus-circle"></i> Dodaj nowy urlop</button>
+    	</div>
+  	</div>
+
+    <!-- Modal -->
+	<div class="modal fade" id="addVacationModal" tabindex="-1" aria-labelledby="addVacationModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5" id="addVacationModalLabel">Dodaj nowy urlop</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form [formGroup]="addNewVacation" (ngSubmit)="submitNewVacation()">
+						<ng-container *ngIf="workers != undefined && workers != null && workers.length > 0">
+            				<div class="mb-3">
+              					<label for="vacationWorkerSelect" class="form-label"><b>Pracownik:</b></label>
+            					<select class="form-control" id="vacationWorkerSelect" formControlName="worker">
+                					<option *ngFor="let worker of workers" value="{{ worker.id }}">{{ worker.name }} {{ worker.surname }}</option>
+           						</select>
+								   <ng-component *ngIf="!addNewVacation.controls['worker'].valid && addNewVacation.controls['worker'].touched ? infoAlert('danger-alert-vacations-worker') : ''"></ng-component>
+            				</div>
+						</ng-container>
+						<ng-container *ngIf="workers == undefined || workers == null || workers.length < 1"><p class="info-table">Brak pracowników do wyświetlenia!</p></ng-container>
+            			<div class="mb-3">
+              				<label for="vacationDateFromField" class="form-label"><b>Początek urlopu:</b></label>
+							<input type="date" class="form-control" id="vacationDateFromField" formControlName="date_from" max="{{this.addNewVacation.get('date_to')?.value}}" min="1990-01-01">
+							<ng-component *ngIf="!addNewVacation.controls['date_from'].valid && addNewVacation.controls['date_from'].touched ? infoAlert('danger-alert-vacations-start') : ''"></ng-component>
+            			</div>
+            			<div class="mb-3">
+              				<label for="vacationDateToField" class="form-label"><b>Koniec urlopu:</b></label>
+							<input  type="date" class="form-control" id="vacationDateToField" formControlName="date_to" min="{{this.addNewVacation.get('date_from')?.value}}" max="2100-01-01" >
+							<ng-component *ngIf="!addNewVacation.controls['date_to'].valid && addNewVacation.controls['date_to'].touched ? infoAlert('danger-alert-vacations-end') : ''"></ng-component>
+            			</div>
+            			<div class="modal-footer">
+              				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-box-arrow-left"></i></button>
+							<button [disabled]="!addNewVacation.valid" type="submit" class="btn btn-success" data-bs-dismiss="modal"><i class="bi bi-check-lg"></i></button>
+						</div>
+            		</form>
+					<!-- ALERTY -->
+					<div class="alert alert-danger" id="danger-alert-vacations-worker" role="alert">
+						<i class="bi bi-exclamation-circle"></i> Pole "Pracownik" nie może pozostać puste.
+					</div>
+
+					<div class="alert alert-danger" id="danger-alert-vacations-start" role="alert">
+						<i class="bi bi-exclamation-circle"></i> Pole "Początek urlopu" nie może pozostać puste.
+					</div>
+
+					<div class="alert alert-danger" id="danger-alert-vacations-end" role="alert">
+						<i class="bi bi-exclamation-circle"></i>Pole "Koniec urlopu" nie może pozostać puste.
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Modal potwierdzenie usunięcia urlopu -->
+<div class="modal fade" id="delConfirmModal" tabindex="-1" aria-labelledby="delConfirmModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5" id="delConfirmModalLabel">Czy na pewno chcesz usunąć?</h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-box-arrow-left"></i></button>
+				<button type="button" class="btn btn-success" (click)="deleteVacation()" data-bs-dismiss="modal"><i class="bi bi-check-lg"></i></button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<!-- ALERT -->
+<div class="alert alert-danger" id="danger-alert-null" role="alert">
+	<i class="bi bi-exclamation-circle"></i> Coś poszło nie tak.. <br> Spróbuj jeszcze raz.
+</div>
+
+<div class="alert alert-danger" id="danger-alert-already" role="alert">
+	<i class="bi bi-exclamation-circle"></i> Urlopy nie mogą się nakładać!
+</div>
+
+<div class="alert alert-success" id="success-alert-add" role="alert">
+    <i class="bi bi-check-circle-fill"></i> Uzrlop został pomyślnie dodany.
+</div>

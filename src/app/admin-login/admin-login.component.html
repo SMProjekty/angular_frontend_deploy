@@ -1,0 +1,24 @@
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <nav class="navbar bg-dark tmenu">
+        <a class="navbar-brand nav-offers" href="/editDelService"><h4><i class="bi bi-scissors"></i></h4></a>
+				<a class="navbar-brand nav-visits" href="/delVisit"><h4><i class="bi bi-calendar-check-fill"></i></h4></a>
+				<a class="navbar-brand nav-vacations" href="/vacations"><h4><i class="bi bi-airplane-fill"></i></h4></a>
+				<a class="navbar-brand nav-workers" href="/workers"><h4><i class="bi bi-people-fill"></i></h4></a>
+				<a class="navbar-brand nav-reports" href="/raports"><h4><i class="bi bi-database-fill-check"></i></h4></a>
+				<a class="navbar-brand modal-exit" href="/main"><h4><i class="bi bi-box-arrow-left"></i></h4></a>
+      </nav>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col"></div>
+      <div class="col col-margin">
+        <div class="mb-3">
+          <input type="password" class="form-control" placeholder="password" [(ngModel)]="admin_password">
+        </div>
+        <button class="btn btn-success" (click)="checkPassword(admin_password)">Login</button>
+      </div>
+    <div class="col"></div>
+  </div>
+</div>

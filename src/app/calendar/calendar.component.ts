@@ -1,64 +1,58 @@
-import { Component, OnInit, } from '@angular/core';
+import { Component } from '@angular/core';
 import { SharedService } from '../shared.service';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { IWorker, IVisit } from '../interfaces';
+import { DatePipe } from '@angular/common';
+import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-calendar',
   templateUrl: './calendar.component.html',
-  styleUrls: ['./calendar.component.css']
+  styleUrls: ['./calendar.component.css'],
+  providers: [DatePipe]
 })
+
 export class CalendarComponent {
-  workers: any;
-  date_nav: string = '';
+  workers: IWorker[] = [];
+  visits?: IVisit[];
+  nowDate = new Date();
+  dateNav: string = '';
+  shortDate;
 
-  visits: any = [];
-
-  //   {datetime: "08:00 - 10:00", name: "Stylizacja", client: "Marta Kowalska", worker: "Basia", bgcolor: "#d1e7dd"},
-  //   {datetime: "08:00 - 10:00", name: "Stylizacja i ścięcie", client: "Marta Kowalska", worker: "Kasia", bgcolor: "#f8d7da"},
-  //   {datetime: "08:00 - 10:00", name: "Stylizacja i kolor", client: "Marta Kowalska", worker: "Asia", bgcolor: "#fff3cd"}
-  // ];
-  myForm!: FormGroup;
-  listaUslug: any = null;
-  //listaPracownikow: any;
-  listaDostepnychGodzin: any = null;
-  
-  constructor(private service: SharedService, private fb: FormBuilder) {}
+  constructor(private service: SharedService, private datePipe: DatePipe) {
+    this.shortDate = this.datePipe.transform(this.nowDate, 'yyyy-MM-dd');
+    this.dateNav = this.shortDate as string;
+  }
 
   ngOnInit(): void {
-    this.getListaPracownikow();
-    //this.getListaUslug();
-    // this.myForm = this.fb.group({
-    //   pracownik: [1],
-    //   usluga: [6],
-    //   data: [],
-    //   godzina: []
-    // });
+    this.getListOfWorkers();
+    this.refreshVisits(this.dateNav);
   }
 
-  refreshVisits() {
-    var x = {today_date: this.date_nav};
-    console.log(x);
-    this.service.getVisits(x).subscribe(res => {
-      console.log(res)
-      this.visits = res;
-    });
-  }
-
-  // getListaUslug() {
-  //   this.service.listaUslug().subscribe(res => this.listaUslug = res);
-  // }
-
-  getListaPracownikow() {
-    this.service.listaPracownikow().subscribe(res => {
+  getListOfWorkers() {
+    this.service.listOfWorkers().subscribe((res: IWorker[]) => {
       this.workers = res;
+      this.workers.forEach(worker => worker.checked = true);
     });
   }
 
-  // getListaDostepnychGodzin(data: string) {
-  //   this.service.listaDostepnychGodzin(data).subscribe(res => console.log(res));
-  // }
+  refreshVisits(date: string) {
+    this.visits = undefined;
+    var x = {Date: date};
+    this.service.getVisits(x).subscribe((res: IVisit[]) => {
+      this.visits = res;
+    })
+  }
 
-  submitHandler() {
-    //this.getListaDostepnychGodzin(this.myForm.controls['data'].value);
+  changeWorkerStatus(id :number) {
+    let workerId = this.workers.findIndex((obj: { id: Number; }) => obj.id === id);
+    if(this.workers[workerId].checked)
+      this.workers[workerId].checked = false;
+    else
+      this.workers[workerId].checked = true;
+  }
+
+  checkWorkerStatus(id: number): boolean {
+    let workerId = this.workers.findIndex((obj: { id: Number; }) => obj.id === id);
+    return this.workers[workerId].checked;
   }
 }
